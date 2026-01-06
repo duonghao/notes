@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      doodle.css:
+        specifier: ^0.0.2
+        version: 0.0.2
       next:
         specifier: 16.1.1
         version: 16.1.1(@babel/core@7.28.5)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
@@ -869,6 +872,9 @@ packages:
   doctrine@2.1.0:
     resolution: {integrity: sha512-35mSku4ZXK0vfCuHEDAwt55dg2jNajHZ1odvF+8SSr82EsZY4QmXfuWso8oEd8zRhVObSN18aM0CjSdoBX7zIw==}
     engines: {node: '>=0.10.0'}
+
+  doodle.css@0.0.2:
+    resolution: {integrity: sha512-WHIPpiPAG+GgdSOu9tSfRisvSCClEobSMKZ2JmvbawKKO9aff2SIhlZC0w3nE8/k+kph1NS8tON+3VJiUpl1oA==}
 
   dunder-proto@1.0.1:
     resolution: {integrity: sha512-KIN/nDJBQRcXw0MLVhZE9iQHmG68qAVIBg9CqmUYjmQIhgij9U5MFvrqkUL5FbtyyzZuOeOt0zdeRe4UY7ct+A==}
@@ -2714,6 +2720,8 @@ snapshots:
   doctrine@2.1.0:
     dependencies:
       esutils: 2.0.3
+
+  doodle.css@0.0.2: {}
 
   dunder-proto@1.0.1:
     dependencies:
