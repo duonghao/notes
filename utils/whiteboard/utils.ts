@@ -1,4 +1,6 @@
-export const normalizePointerEvent = (e: PointerEvent) => {
+import React from "react";
+
+export const normalizePointerEvent = (e: React.MouseEvent) => {
   if (!(e.target instanceof HTMLElement)) return;
 
   const element = e.target;

@@ -1,52 +1,30 @@
 "use client";
 
-import useCanvas from "@/utils/canvas/useCanvas";
-import { Tool } from "@/utils/canvas/types";
-import { cn } from "@/utils/components";
-import useActiveTool from "@/utils/canvas/useActiveTool";
-
-const tools: Tool[] = [
-  {
-    id: "image",
-    onClick: (p, { canvas }) => {
-      canvas.addNode(p.x, p.y, "🖼️");
-    },
-  },
-  {
-    id: "text",
-    onClick: (p, { canvas }) => {
-      canvas.addNode(p.x, p.y, "hello");
-    },
-  },
-];
+import useCanvas from "@/hooks/useEditor";
+import { normalizePointerEvent } from "@/utils/whiteboard/utils";
 
 export default function Notes() {
-  const { ref, canvas } = useCanvas(tools);
-  const activeTool = useActiveTool(canvas);
+  const { ref, editor } = useCanvas();
 
   return (
     <section className="w-full h-full">
-      <div className="flex gap-2">
-        <button
-          onClick={() => {
-            canvas?.setActiveTool("image");
-            console.log(canvas?.getActiveTool());
-          }}
-          className={cn(activeTool === "image" && "bg-red-500!", "w-12 h-12")}
-        >
-          🖼️
-        </button>
-        <button
-          onClick={() => {
-            canvas?.setActiveTool("text");
-            console.log(canvas?.getActiveTool());
-          }}
-          className={cn(activeTool === "text" && "bg-red-500!", "w-12 h-12")}
-        >
-          T
-        </button>
-      </div>
-      <div ref={ref} className="w-full h-full relative border" />
+      <div
+        ref={ref}
+        className="w-full h-full relative border"
+        onClick={(event) => {
+          const target = normalizePointerEvent(event);
+
+          if (!target) return;
+
+          editor?.addShape({
+            type: "rectangle",
+            id: crypto.randomUUID(),
+            height: 100,
+            width: 100,
+            ...target,
+          });
+        }}
+      />
     </section>
   );
 }
