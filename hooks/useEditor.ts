@@ -1,24 +1,22 @@
-import { DOMRenderer } from "@/utils/whiteboard/DOMRenderer";
-import { createEditor, Editor } from "@/utils/whiteboard/editor";
+import { createEditor } from "@/utils/whiteboard";
 import { useLayoutEffect, useRef, useState } from "react";
 
 export default function useEditor() {
   const ref = useRef<HTMLDivElement | null>(null);
-  const [editor, setEditor] = useState<Editor | null>(null);
+  const [editor, setEditor] = useState<ReturnType<typeof createEditor> | null>(
+    null
+  );
 
   useLayoutEffect(() => {
     if (!ref.current) return;
 
-    const _editor = createEditor({
-      renderer: new DOMRenderer(),
-    });
+    const editor = createEditor({ container: ref.current });
 
-    _editor.mount(ref.current);
+    editor.mount();
 
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setEditor(_editor);
+    setEditor(editor);
 
-    return () => _editor.destroy();
+    return () => editor.unmount();
   }, []);
 
   return {

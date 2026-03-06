@@ -1,10 +1,18 @@
-import React from "react";
+import { Point } from "./types";
 
-export const normalizePointerEvent = (e: React.MouseEvent) => {
-  if (!(e.target instanceof HTMLElement)) return;
+export function getViewportPoint(e: PointerEvent): Point {
+  return {
+    x: e.clientX,
+    y: e.clientY,
+  };
+}
+
+export const getLocalPoint = (e: PointerEvent, container: HTMLElement) => {
+  if (!(e.target instanceof HTMLElement))
+    throw new Error("Cannot normalise point");
 
   const element = e.target;
-  const rect = element.getBoundingClientRect();
+  const rect = container.getBoundingClientRect();
 
   const styles = window.getComputedStyle(element);
   const borderLeft = parseFloat(styles.borderLeftWidth);

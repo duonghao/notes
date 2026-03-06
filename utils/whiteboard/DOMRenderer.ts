@@ -1,6 +1,7 @@
-import { EditorEvent, Id, Renderer, Shape, Viewport } from "./types";
+import { EditorEvent, Id, IRenderer, Point, Shape, Viewport } from "./types/";
+import { InteractionContext } from "./types/context";
 
-export class DOMRenderer implements Renderer {
+export class DOMRenderer implements IRenderer, InteractionContext {
   private container!: HTMLElement;
   private elements = new Map<Id, HTMLElement>();
 
@@ -26,6 +27,9 @@ export class DOMRenderer implements Renderer {
       case "viewport:changed":
         this.updateViewport(event.viewport);
         break;
+
+      case "selection:changed":
+        this.updateSelectionOverlay(event.ids);
     }
   }
 
@@ -34,19 +38,35 @@ export class DOMRenderer implements Renderer {
     this.elements.clear();
   }
 
+  hitTest(viewportPoint: Point): string | null {
+    const doc = this.container.ownerDocument;
+
+    const el = doc.elementFromPoint(viewportPoint.x, viewportPoint.y);
+    if (!el || !this.container.contains(el)) return null;
+
+    return el.closest("[data-shape-id]")?.getAttribute("data-shape-id") ?? null;
+  }
+
   private createElement(shape: Shape) {
     if (shape.type === "rectangle") {
-      const el = document.createElement("div");
+      const containerEl = document.createElement("div");
+      containerEl.style.position = "absolute";
+      containerEl.style.left = `calc(${shape.x}px - 1rem)`;
+      containerEl.style.top = `calc(${shape.y}px - 1rem)`;
+      containerEl.style.padding = "1rem";
 
-      el.style.position = "absolute";
-      el.style.left = `${shape.x}px`;
-      el.style.top = `${shape.y}px`;
-      el.style.width = `${shape.width}px`;
-      el.style.height = `${shape.height}px`;
-      el.style.background = "black";
+      const shapeEl = document.createElement("div");
+      // Attributes
+      shapeEl.dataset.shapeId = shape.id;
+      // Size
+      shapeEl.style.width = `${shape.width}px`;
+      shapeEl.style.height = `${shape.height}px`;
+      // Color
+      shapeEl.style.background = "black";
+      containerEl.appendChild(shapeEl);
 
-      this.container.appendChild(el);
-      this.elements.set(shape.id, el);
+      this.container.appendChild(containerEl);
+      this.elements.set(shape.id, containerEl);
     }
   }
 
@@ -69,4 +89,14 @@ export class DOMRenderer implements Renderer {
   }
 
   private updateViewport(viewport: Partial<Viewport>) {}
+
+  private updateSelectionOverlay(ids: Id[]) {
+    for (const id of ids) {
+      const selected = this.elements.get(id);
+
+      if (!selected) return;
+
+      selected.style.border = "1px dashed black";
+    }
+  }
 }

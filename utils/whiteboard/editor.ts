@@ -1,66 +1,40 @@
+import { ToolManager } from "./tool-manager";
 import type {
   EditorEvent,
   EditorState,
   Id,
   IEditor,
   Listener,
-  Renderer,
+  SelectionState,
   Shape,
-  Tool,
-  ToolState,
   Viewport,
   ViewportState,
-} from "./types";
+} from "./types/";
+import { InteractionContext } from "./types/context";
 
 export class Editor implements IEditor {
-  renderer: Renderer;
   isMounted: boolean = false;
 
   // State
   editorState: EditorState = {
     shapes: {},
   };
+  selectionState: SelectionState = {
+    selected: new Set<Id>(),
+  };
+
   viewportState: ViewportState = {
     zoom: 0,
     offsetX: 0,
     offsetY: 0,
   };
-  toolState: ToolState = {
-    current: undefined,
-  };
+  toolManager: ToolManager;
 
-  constructor({ renderer }: EditorOptions) {
-    this.renderer = renderer;
-
-    this.on(this.renderer.handle.bind(this.renderer));
-  }
-
-  // Lifecycle
-
-  mount(container: HTMLElement) {
-    if (this.isMounted) return;
-
-    this.renderer.mount(container);
-
-    this.isMounted = true;
-  }
-
-  unmount() {
-    if (!this.isMounted) return;
-
-    this.renderer.unmount();
-    this.isMounted = false;
-  }
-
-  destroy(): void {
-    this.unmount();
-
-    // Clean up event handlers, etc.
-    this.listeners.clear();
+  constructor(interactionContext: InteractionContext) {
+    this.toolManager = new ToolManager(this, interactionContext);
   }
 
   // Read
-
   getEditorState(): Readonly<EditorState> {
     return this.editorState;
   }
@@ -72,9 +46,6 @@ export class Editor implements IEditor {
   }
   getShape(id: Id): Readonly<Shape> | undefined {
     return this.editorState.shapes[id];
-  }
-  getCurrentTool(): Tool | undefined {
-    return this.toolState.current;
   }
 
   // Mutations
@@ -90,15 +61,23 @@ export class Editor implements IEditor {
     });
   }
   updateShape(id: Id, patch: Partial<Omit<Shape, "Id">>): void {
-    const currentShape = this.editorState.shapes["abc"];
+    const currentShape = this.editorState.shapes[id];
 
     if (!currentShape)
       throw new Error("InvalidOperation", { cause: "Shape does not exist." });
 
-    this.editorState.shapes[id] = {
+    const newShape = {
       ...currentShape,
       ...patch,
     };
+
+    this.editorState.shapes[id] = newShape;
+
+    this.emit({
+      type: "shape:updated",
+      id: id,
+      shape: newShape,
+    });
   }
   deleteShape(id: Id): void {
     const shapeToDelete = this.editorState.shapes[id];
@@ -108,14 +87,20 @@ export class Editor implements IEditor {
 
     delete this.editorState.shapes[id];
   }
-  setCurrentTool(tool: Tool): void {
-    this.toolState.current = tool;
-  }
   updateViewport(viewport: Partial<Viewport>): void {
     this.viewportState = {
       ...this.viewportState,
       ...viewport,
     };
+  }
+  updateSelect(id: Id) {
+    this.selectionState.selected.clear();
+    this.selectionState.selected.add(id);
+
+    this.emit({
+      type: "selection:changed",
+      ids: Array.from(this.selectionState.selected),
+    });
   }
 
   // Listeners
@@ -135,12 +120,4 @@ export class Editor implements IEditor {
       listener(event);
     }
   }
-}
-
-interface EditorOptions {
-  renderer: Renderer;
-}
-
-export function createEditor(options: EditorOptions) {
-  return new Editor(options);
 }
