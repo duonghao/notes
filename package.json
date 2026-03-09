@@ -1,29 +1,17 @@
 {
   "name": "notes",
-  "version": "0.1.0",
+  "version": "0.0.0",
   "private": true,
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint"
-  },
-  "dependencies": {
-    "clsx": "^2.1.1",
-    "doodle.css": "^0.0.2",
-    "next": "16.1.1",
-    "react": "19.2.3",
-    "react-dom": "19.2.3",
-    "tailwind-merge": "^3.4.0"
-  },
+  "scripts": {},
   "devDependencies": {
-    "@tailwindcss/postcss": "^4",
+    "@eslint/js": "^9.39.2",
     "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "eslint": "^9",
-    "eslint-config-next": "16.1.1",
-    "tailwindcss": "^4",
-    "typescript": "^5"
+    "eslint": "^9.39.2",
+    "prettier": "^3.8.1",
+    "publint": "^0.3.18",
+    "tsdown": "^0.21.0",
+    "typescript": "^5.7.2",
+    "typescript-eslint": "^8.56.1",
+    "vitest": "^4.0.18"
   }
 }
