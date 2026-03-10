@@ -51,7 +51,7 @@ export class Editor implements IEditor {
       shape: shape,
     })
   }
-  updateShape(id: Id, patch: Partial<Omit<Shape, 'Id'>>): void {
+  updateShape(id: Id, patch: Partial<Omit<Shape, 'id'>>): void {
     const currentShape = this.editorState.shapes[id]
 
     if (!currentShape)
@@ -77,6 +77,11 @@ export class Editor implements IEditor {
       throw new Error('InvalidOperation', { cause: 'Shape does not exist.' })
 
     delete this.editorState.shapes[id]
+
+    this.emit({
+      type: 'shape:removed',
+      id: id,
+    })
   }
   updateSelect(id: Id) {
     const prev = new Set(this.selectionState.selected)
