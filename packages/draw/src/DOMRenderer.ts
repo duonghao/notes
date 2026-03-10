@@ -20,12 +20,12 @@ export class DOMRenderer implements IRenderer, InteractionContext {
         this.updateElement(event.id, event.shape)
         break
 
-      case 'shape:removed':
-        this.removeElement(event.id)
+      case 'shape:deleted':
+        this.deleteElement(event.id)
         break
 
       case 'selection:changed':
-        this.updateSelectionOverlay(event.added, event.removed)
+        this.updateSelected(event.added, event.removed)
     }
   }
 
@@ -82,15 +82,15 @@ export class DOMRenderer implements IRenderer, InteractionContext {
     if ('height' in patch) shapeEl.style.height = `${patch.height}px`
   }
 
-  private removeElement(id: Id) {
+  private deleteElement(id: Id) {
     const el = this.elements.get(id)
     if (!el) return
 
-    el.remove()
     this.elements.delete(id)
+    el.remove()
   }
 
-  private updateSelectionOverlay(added: Id[], removed: Id[]) {
+  private updateSelected(added: Id[], removed: Id[]) {
     added.forEach((id) => {
       const selected = this.elements.get(id)
 

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 
 import { useEditor } from '@notes/draw-react'
-import { AddTool, DragTool, SelectTool } from '@notes/draw'
+import { AddTool, DeleteTool, DragTool, SelectTool } from '@notes/draw'
 
 export default function Notes() {
   const { ref, editor } = useEditor()
@@ -23,6 +23,7 @@ export default function Notes() {
     })
 
     editor.registerTool(new AddTool('add'))
+    editor.registerTool(new DeleteTool('delete'))
     editor.registerTool(new DragTool('drag'))
     editor.registerTool(new SelectTool('select'))
 
@@ -44,6 +45,17 @@ export default function Notes() {
               Add
             </button>
           </li>
+          <li>
+            <button
+              className="border rounded-sm px-4 py-2 min-w-20"
+              onClick={() => {
+                if (!editor) return
+                editor.setActiveTool('delete')
+              }}
+            >
+              Delete
+            </button>
+            </li>
           <li>
             <button
               className="border rounded-sm px-4 py-2 min-w-20"

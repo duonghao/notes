@@ -79,7 +79,7 @@ export class Editor implements IEditor {
     delete this.editorState.shapes[id]
 
     this.emit({
-      type: 'shape:removed',
+      type: 'shape:deleted',
       id: id,
     })
   }

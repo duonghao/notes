@@ -6,7 +6,7 @@ import { Tool } from './tool'
 export type EditorEvent =
   | { type: 'shape:added'; shape: Shape }
   | { type: 'shape:updated'; id: Id; shape: Partial<Omit<Shape, 'id'>> }
-  | { type: 'shape:removed'; id: Id }
+  | { type: 'shape:deleted'; id: Id }
   | { type: 'selection:changed'; added: Id[]; removed: Id[] }
 
 export interface EditorState {
